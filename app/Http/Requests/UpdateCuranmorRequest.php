@@ -25,13 +25,13 @@ class UpdateCuranmorRequest extends FormRequest
     public function rules()
     {
         return [
-            'nama_pasien' => ['required', 'string'],
-            'nama_kepala_keluarga' => ['required', 'string'],
-            'no_kartu' => ['required', 'integer'],
-            'umur' => ['required', 'integer'],
-            'alamat' => ['required'],
-            'jenis_kelamin' => ['required', Rule::in(['laki-laki', 'perempuan'])],
-            'status' => ['required', Rule::in(['umum', 'jkm', 'bpjs'])],
+            'no_laporan' => ['required', 'string'],
+            'jenis_laporan' => ['required', Rule::in(['Pencurian', 'Pembobolan'])],
+            'hari_kejadian' => ['required', 'date'],
+            'pelapor' => ['required', 'string'],
+            'jenis_motor' => ['required', Rule::in(['Gigi', 'Matic', 'Kopling'])],
+            'barang_bukti' => ['required'],
+            'kronologis' => ['required'],
         ];
     }
 }

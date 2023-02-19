@@ -1,4 +1,4 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
             fontFamily: {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
-            colors:{
+            colors: {
                 dark: {
                     'white': '#cdd9e5',
                     50: '#cdd9e5',
@@ -47,5 +47,11 @@ module.exports = {
         },
     },
 
+    safelist: [
+        'w-max',
+        'lg:w-auto',
+        'w-auto',
+    ],
+
     plugins: [require('@tailwindcss/forms')],
-};
+}

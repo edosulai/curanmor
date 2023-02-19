@@ -22,7 +22,7 @@ export default function Table({ data, columns, tops = [], bottoms = [] }) {
         tops.forEach((Top) => {
             let newElement = document.createElement("div");
             newElement.style.float = "left";
-            tableRef.current.parentNode.previousSibling.style.width = "max-content"
+            tableRef.current.parentNode.previousSibling.className = tableRef.current.parentNode.previousSibling.className +  " w-max lg:w-auto"
             tableRef.current.parentNode.previousSibling.insertBefore(
                 newElement,
                 tableRef.current.parentNode.previousSibling.querySelector(

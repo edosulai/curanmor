@@ -35,7 +35,20 @@ export default function Index({ data, auth, status }) {
             from: "hari_kejadian",
             to: "Hari Kejadian",
             select: 3,
-            render: celltoLink,
+            render: (data, td, rowIndex, cellIndex) =>
+                ReactDOMServer.renderToString(
+                    <Link
+                        className="flex items-center cursor-pointer px-4 py-2"
+                        href={route("dashboard.edit", data[1])}
+                        tabIndex="-1"
+                    >
+                        {new Date(data[0]).toLocaleDateString("id-ID", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                        })}
+                    </Link>
+                ),
         },
         {
             from: "pelapor",
