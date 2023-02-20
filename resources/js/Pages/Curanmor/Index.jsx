@@ -2,7 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import ReactDOMServer from "react-dom/server";
 import Table from "@/Components/Table";
-import CetakTable from "@/Components/CetakTable";
+// import CetakTable from "@/Components/CetakTable";
 
 export default function Index({ data, auth, status }) {
     const celltoLink = function (data, td, rowIndex, cellIndex) {
@@ -145,15 +145,15 @@ export default function Index({ data, auth, status }) {
                                 <Table
                                     data={newData}
                                     columns={columnSetting}
-                                    tops={[
-                                        {
-                                            element: CetakTable,
-                                            context: {
-                                                nama: "Laporan Data Curanmor",
-                                                tombol: "Cetak Laporan Curanmor",
-                                            },
-                                        },
-                                    ]}
+                                    // tops={[
+                                    //     {
+                                    //         element: CetakTable,
+                                    //         context: {
+                                    //             nama: "Laporan Data Curanmor",
+                                    //             tombol: "Cetak Laporan Curanmor",
+                                    //         },
+                                    //     },
+                                    // ]}
                                 />
                             </div>
                         </div>
