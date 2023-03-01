@@ -17,12 +17,12 @@ class CuranmorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         return Inertia::render('Curanmor/Index', [
             'data' => Curanmor::select('*')->orderBy('created_at', 'desc')->get(),
             'status' => session('status'),
-        ]);
+        ])->toResponse($request);
     }
 
     /**
@@ -32,10 +32,10 @@ class CuranmorController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Curanmor/Form', [
-            'title' => 'Tambah Curanmor',
-            'status' => session('status'),
-        ]);
+        // return Inertia::render('Curanmor/Form', [
+        //     'title' => 'Tambah Curanmor',
+        //     'status' => session('status'),
+        // ]);
     }
 
     /**
@@ -46,17 +46,17 @@ class CuranmorController extends Controller
      */
     public function store(StoreCuranmorRequest $request)
     {
-        Curanmor::create([
-            'no_laporan' => $request->no_laporan,
-            'jenis_laporan' => $request->jenis_laporan,
-            'hari_kejadian' => Carbon::parse($request->hari_kejadian)->toDateTimeString(),
-            'pelapor' => $request->pelapor,
-            'jenis_motor' => $request->jenis_motor,
-            'barang_bukti' => $request->barang_bukti,
-            'kronologis' => $request->kronologis,
-        ]);
+        // Curanmor::create([
+        //     'no_laporan' => $request->no_laporan,
+        //     'jenis_laporan' => $request->jenis_laporan,
+        //     'hari_kejadian' => Carbon::parse($request->hari_kejadian)->toDateTimeString(),
+        //     'pelapor' => $request->pelapor,
+        //     'jenis_motor' => $request->jenis_motor,
+        //     'barang_bukti' => $request->barang_bukti,
+        //     'kronologis' => $request->kronologis,
+        // ]);
 
-        return redirect()->route('dashboard')->with('status', 'Data Curanmor Berhasil di Tambahkan');
+        // return redirect()->route('dashboard')->with('status', 'Data Curanmor Berhasil di Tambahkan');
     }
 
     /**
@@ -78,14 +78,15 @@ class CuranmorController extends Controller
      */
     public function edit(Request $request, Curanmor $curanmor)
     {
-        $curanmor = $curanmor->find($request->id);
-        if (is_null($curanmor)) return abort(404);
+        // $curanmor = $curanmor->find($request->id);
+        // if (is_null($curanmor))
+        //     return abort(404);
 
-        return Inertia::render('Curanmor/Form', [
-            'title' => 'Edit Data Curanmor',
-            'status' => session('status'),
-            'curanmor' => $curanmor,
-        ]);
+        // return Inertia::render('Curanmor/Form', [
+        //     'title' => 'Edit Data Curanmor',
+        //     'status' => session('status'),
+        //     'curanmor' => $curanmor,
+        // ]);
     }
 
     /**
@@ -97,19 +98,20 @@ class CuranmorController extends Controller
      */
     public function update(UpdateCuranmorRequest $request, Curanmor $curanmor)
     {
-        $curanmor = $curanmor->find($request->id);
-        if (is_null($curanmor)) return abort(400);
+        // $curanmor = $curanmor->find($request->id);
+        // if (is_null($curanmor))
+        //     return abort(400);
 
-        $curanmor->no_laporan = $request->no_laporan;
-        $curanmor->jenis_laporan = $request->jenis_laporan;
-        $curanmor->hari_kejadian = Carbon::parse($request->hari_kejadian)->toDateTimeString();
-        $curanmor->pelapor = $request->pelapor;
-        $curanmor->jenis_motor = $request->jenis_motor;
-        $curanmor->barang_bukti = $request->barang_bukti;
-        $curanmor->kronologis = $request->kronologis;
-        $curanmor->save();
+        // $curanmor->no_laporan = $request->no_laporan;
+        // $curanmor->jenis_laporan = $request->jenis_laporan;
+        // $curanmor->hari_kejadian = Carbon::parse($request->hari_kejadian)->toDateTimeString();
+        // $curanmor->pelapor = $request->pelapor;
+        // $curanmor->jenis_motor = $request->jenis_motor;
+        // $curanmor->barang_bukti = $request->barang_bukti;
+        // $curanmor->kronologis = $request->kronologis;
+        // $curanmor->save();
 
-        return redirect()->route('dashboard')->with('status', 'Data Curanmor ' . $request->no_laporan . ' Berhasil di Ubah');
+        // return redirect()->route('dashboard')->with('status', 'Data Curanmor ' . $request->no_laporan . ' Berhasil di Ubah');
     }
 
     /**
@@ -120,19 +122,19 @@ class CuranmorController extends Controller
      */
     public function destroy(Request $request, Curanmor $curanmor)
     {
-        $validator = Validator::make(['id' => $request->id], [
-            'id' => ['required', 'integer', 'exists:' . Curanmor::class . ',id'],
-        ]);
+        // $validator = Validator::make(['id' => $request->id], [
+        //     'id' => ['required', 'integer', 'exists:' . Curanmor::class . ',id'],
+        // ]);
 
-        if ($validator->fails()) {
-            return redirect("dashboard")
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect("dashboard")
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
 
-        $curanmor = $curanmor->find($request->id);
-        $curanmor->delete();
+        // $curanmor = $curanmor->find($request->id);
+        // $curanmor->delete();
 
-        return redirect()->route('dashboard')->with('status', 'Data Curanmor ' . $request->no_laporan . ' Berhasil di Hapus');
+        // return redirect()->route('dashboard')->with('status', 'Data Curanmor ' . $request->no_laporan . ' Berhasil di Hapus');
     }
 }

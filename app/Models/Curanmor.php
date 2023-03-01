@@ -15,12 +15,22 @@ class Curanmor extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'no_laporan',
+        'nama_pelapor',
+        'nohp_pelapor',
+        'nama_terlapor',
+        'jenis_perkara',
         'jenis_laporan',
-        'hari_kejadian',
-        'pelapor',
-        'jenis_motor',
-        'barang_bukti',
+        'gambar_laporan',
+        'no_laporan',
+        'waktu_melapor',
+        'waktu_kejadian',
+        'tkp',
+        'gambar_kerugian',
+        'gambar_barang_bukti',
         'kronologis',
+        'nama_penyidik',
+        'nama_penyidik_pembantu',
+        'perkembangan_perkara',
+        'keterangan',
     ];
 }

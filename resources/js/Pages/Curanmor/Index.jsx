@@ -1,114 +1,133 @@
+import React, { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
-import ReactDOMServer from "react-dom/server";
-import Table from "@/Components/Table";
-// import CetakTable from "@/Components/CetakTable";
+import DataTable from "react-data-table-component";
+import TextInput from "@/Components/TextInput";
 
 export default function Index({ data, auth, status }) {
-    const celltoLink = function (data, td, rowIndex, cellIndex) {
-        return ReactDOMServer.renderToString(
-            <Link
-                className="flex items-center cursor-pointer px-4 py-2"
-                href={route("dashboard.edit", data[1])}
-                tabIndex="-1"
-            >
-                {data[0]}
-            </Link>
-        );
-    };
+    const columnsSelector = (cellValue, href) => (
+        <Link
+            className="flex items-center cursor-pointer w-full"
+            href={route("dashboard.edit", href)}
+        >
+            {cellValue}
+        </Link>
+    );
 
-    const columnSetting = [
-        { from: "No", to: "No", select: 0, sort: "asc", render: celltoLink },
+    const dateTimeFormat = (value) =>
+        new Date(value).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        });
+
+    const newData = _.map(data, (item, index) => {
+        return {
+            no: index + 1,
+            ...item,
+        };
+    });
+
+    const columns = [
         {
-            from: "no_laporan",
-            to: "No Laporan",
-            select: 1,
-            render: celltoLink,
-        },
-        {
-            from: "jenis_laporan",
-            to: "Jenis Laporan",
-            select: 2,
-            render: celltoLink,
-        },
-        {
-            from: "hari_kejadian",
-            to: "Hari Kejadian",
-            select: 3,
-            render: (data, td, rowIndex, cellIndex) =>
-                ReactDOMServer.renderToString(
+            name: "No",
+            cell: (row) =>
+                ((cellValue, href) => (
                     <Link
-                        className="flex items-center cursor-pointer px-4 py-2"
-                        href={route("dashboard.edit", data[1])}
-                        tabIndex="-1"
+                        className="flex items-center cursor-pointer w-4"
+                        href={route("dashboard.edit", href)}
                     >
-                        {new Date(data[0]).toLocaleDateString("id-ID", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                        })}
+                        {cellValue}
                     </Link>
+                ))(row.no, row.id),
+            selector: (row) => row.no,
+            width: "fit-content",
+            sortable: true,
+        },
+        // {
+        //     name: "No Laporan",
+        //     cell: (row) => columnsSelector(row.no_laporan, row.id),
+        //     selector: (row) => row.no_laporan,
+        //     sortable: true,
+        // },
+        {
+            name: "Nama/No.HP Pelapor",
+            cell: (row) =>
+                columnsSelector(
+                    `${row.nama_pelapor} / ${row.nohp_pelapor}`,
+                    row.id
                 ),
+            selector: (row) => `${row.nama_pelapor} / ${row.nohp_pelapor}`,
+            sortable: true,
         },
         {
-            from: "pelapor",
-            to: "Pelapor",
-            select: 4,
-            render: celltoLink,
+            name: "Nama Terlapor",
+            cell: (row) => columnsSelector(row.nama_terlapor, row.id),
+            selector: (row) => row.nama_terlapor,
+            sortable: true,
         },
         {
-            from: "jenis_motor",
-            to: "Jenis Motor",
-            select: 5,
-            render: celltoLink,
+            name: "Jenis Perkara",
+            cell: (row) => columnsSelector(row.jenis_perkara, row.id),
+            selector: (row) => row.jenis_perkara,
+            sortable: true,
         },
         {
-            from: "barang_bukti",
-            to: "Barang Bukti",
-            select: 6,
-            render: celltoLink,
+            name: "Jenis/No Laporan",
+            cell: (row) =>
+                columnsSelector(
+                    `${row.jenis_laporan} / ${row.no_laporan}`,
+                    row.id
+                ),
+            selector: (row) => `${row.jenis_laporan} / ${row.no_laporan}`,
+            sortable: true,
         },
         {
-            from: "kronologis",
-            to: "Kronologis",
-            select: 7,
-            render: celltoLink,
+            name: "Waktu Melapor",
+            cell: (row) =>
+                columnsSelector(dateTimeFormat(row.waktu_melapor), row.id),
+            selector: (row) => dateTimeFormat(row.waktu_melapor),
+            sortable: true,
         },
-        { from: "id", to: "id", select: 8, hidden: true },
+        {
+            name: "Waktu Kejadian",
+            cell: (row) =>
+                columnsSelector(dateTimeFormat(row.waktu_kejadian), row.id),
+            selector: (row) => dateTimeFormat(row.waktu_kejadian),
+            sortable: true,
+        },
+        {
+            name: "Nama Penyidik & Pembantu",
+            cell: (row) =>
+                columnsSelector(
+                    `${row.nama_penyidik} & ${row.nama_penyidik_pembantu}`,
+                    row.id
+                ),
+            selector: (row) =>
+                `${row.nama_penyidik} & ${row.nama_penyidik_pembantu}`,
+            sortable: true,
+        },
     ];
 
-    const filteredData = _.map(data, (obj) =>
-        _.pick(obj, _.map(columnSetting, "from"))
-    );
+    const [searchText, setSearchText] = useState("");
 
-    const fromTo = _.map(filteredData, (obj) =>
-        _.reduce(
-            columnSetting,
-            (result, m) => {
-                result[m.to] = obj[m.from];
-                return result;
-            },
-            {}
+    const handleSearch = (event) => {
+        setSearchText(event.target.value);
+    };
+
+    const filteredData = newData.filter((item) =>
+        Object.keys(item).some(
+            (key) =>
+                item[key] &&
+                item[key]
+                    .toString()
+                    .toLowerCase()
+                    .includes(searchText.toLowerCase())
         )
     );
-
-    const dataWithIndex = _.map(fromTo, (item, index) =>
-        _.extend({}, item, {
-            No: String(index + 1).padStart(
-                fromTo.length.toString().length,
-                "0"
-            ),
-        })
-    );
-
-    const newData = _.map(dataWithIndex, function (obj) {
-        return _.mapValues(obj, function (value, key) {
-            if (key === "id") {
-                return;
-            }
-            return [value, obj.id];
-        });
-    });
 
     return (
         <AuthenticatedLayout
@@ -116,7 +135,7 @@ export default function Index({ data, auth, status }) {
             header={
                 <div className="flex">
                     <h2 className="font-semibold text-xl text-gray-800  leading-tight">
-                        Tabel Curanmor
+                        Tabel PERKARA
                     </h2>
                     <div className="space-x-4 -my-px ml-10 flex">
                         <Link
@@ -129,10 +148,10 @@ export default function Index({ data, auth, status }) {
                 </div>
             }
         >
-            <Head title="Curanmor" />
+            <Head title="PERKARA" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 ">
                             {status && (
@@ -141,21 +160,33 @@ export default function Index({ data, auth, status }) {
                                 </div>
                             )}
 
-                            <div className="overflow-x-scroll">
-                                <Table
-                                    data={newData}
-                                    columns={columnSetting}
-                                    // tops={[
-                                    //     {
-                                    //         element: CetakTable,
-                                    //         context: {
-                                    //             nama: "Laporan Data Curanmor",
-                                    //             tombol: "Cetak Laporan Curanmor",
-                                    //         },
-                                    //     },
-                                    // ]}
-                                />
-                            </div>
+                            <DataTable
+                                // title="Tabel PERKARA"
+                                columns={columns}
+                                data={filteredData}
+                                pagination={true}
+                                dense={true}
+                                highlightOnHover={true}
+                                pointerOnHover={true}
+                                striped={true}
+                                responsive={true}
+                                expandableRows={true}
+                                subHeader={true}
+                                subHeaderComponent={
+                                    <TextInput
+                                        id="search_input"
+                                        type="text"
+                                        name="search_input"
+                                        className="block w-full"
+                                        isFocused={true}
+                                        handleChange={handleSearch}
+                                        placeholder="Search"
+                                    />
+                                }
+                                expandableRowsComponent={({ data }) => (
+                                    <pre>{JSON.stringify(data, null, 2)}</pre>
+                                )}
+                            />
                         </div>
                     </div>
                 </div>
