@@ -30,12 +30,12 @@ class CuranmorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        // return Inertia::render('Curanmor/Form', [
-        //     'title' => 'Tambah Curanmor',
-        //     'status' => session('status'),
-        // ]);
+        return Inertia::render('Curanmor/Form', [
+            'title' => 'Tambah Curanmor',
+            'status' => session('status'),
+        ])->toResponse($request);
     }
 
     /**
@@ -78,15 +78,15 @@ class CuranmorController extends Controller
      */
     public function edit(Request $request, Curanmor $curanmor)
     {
-        // $curanmor = $curanmor->find($request->id);
-        // if (is_null($curanmor))
-        //     return abort(404);
+        $curanmor = $curanmor->find($request->id);
+        if (is_null($curanmor))
+            return abort(404);
 
-        // return Inertia::render('Curanmor/Form', [
-        //     'title' => 'Edit Data Curanmor',
-        //     'status' => session('status'),
-        //     'curanmor' => $curanmor,
-        // ]);
+        return Inertia::render('Curanmor/Form', [
+            'title' => 'Edit Data Curanmor',
+            'status' => session('status'),
+            'data' => $curanmor,
+        ]);
     }
 
     /**

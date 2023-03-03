@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import TextInput from "@/Components/TextInput";
 import { Head, Link } from "@inertiajs/react";
 import DataTable from "react-data-table-component";
-import TextInput from "@/Components/TextInput";
+import { Carousel } from "react-responsive-carousel";
 
-export default function Index({ data, auth, status }) {
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+
+export default function Index({ data, auth, status, asset_url }) {
     const columnsSelector = (cellValue, href) => (
         <Link
             className="flex items-center cursor-pointer w-full"
@@ -184,7 +188,102 @@ export default function Index({ data, auth, status }) {
                                     />
                                 }
                                 expandableRowsComponent={({ data }) => (
-                                    <pre>{JSON.stringify(data, null, 2)}</pre>
+                                    <div className="py-10 flex justify-center">
+                                        <div className="flex gap-6 justify-center max-w-screen-xl">
+                                            <div className="basis-5/12">
+                                                <DataTable
+                                                    // className="w-9"
+                                                    title="Detail Data"
+                                                    columns={[
+                                                        {
+                                                            selector: (row) =>
+                                                                row.header,
+                                                            width: "120px",
+                                                            cell: (row) => (
+                                                                <div className="whitespace-normal">
+                                                                    {row.header}
+                                                                </div>
+                                                            ),
+                                                        },
+                                                        {
+                                                            selector: (row) =>
+                                                                row.value,
+                                                            cell: (row) => (
+                                                                <div className="whitespace-normal">
+                                                                    {row.value}
+                                                                </div>
+                                                            ),
+                                                        },
+                                                    ]}
+                                                    data={_.map(
+                                                        _.pick(data, [
+                                                            "nama_pelapor",
+                                                            "nohp_pelapor",
+                                                            "nama_terlapor",
+                                                            "jenis_perkara",
+                                                            "jenis_laporan",
+                                                            "no_laporan",
+                                                            "waktu_melapor",
+                                                            "waktu_kejadian",
+                                                            "tkp",
+                                                            "kronologis",
+                                                            "nama_penyidik",
+                                                            "nama_penyidik_pembantu",
+                                                            "perkembangan_perkara",
+                                                            "keterangan",
+                                                        ]),
+                                                        (value, key) => ({
+                                                            header: _.startCase(
+                                                                key
+                                                            ),
+                                                            value: value,
+                                                        })
+                                                    )}
+                                                    highlightOnHover={true}
+                                                    striped={true}
+                                                    responsive={true}
+                                                />
+                                            </div>
+                                            <div className="basis-7/12">
+                                                <div class="flex items-center justify-between w-full flex-wrap text-[22px] mt-3 mb-[62px]">
+                                                    Detail Gambar
+                                                </div>
+                                                <Carousel>
+                                                    {[
+                                                        {
+                                                            name: "Laporan",
+                                                            img: data.gambar_laporan,
+                                                        },
+                                                        {
+                                                            name: "Kerugian",
+                                                            img: data.gambar_kerugian,
+                                                        },
+                                                        {
+                                                            name: "Barang Bukti",
+                                                            img: data.gambar_barang_bukti,
+                                                        },
+                                                    ].map((each) => (
+                                                        <div className="bg-blue-300 rounded-xl hover:shadow-xl overflow-hidden relative">
+                                                            <div className="absolute p-4 z-20 h-full w-full justify-end flex flex-col">
+                                                                <div className="p-2 rounded-xl w-full hover:shadow-xl backdrop-blur-sm bg-gray-800/50 self-end border-gray-400/80 border mb-7">
+                                                                    <h1 className="text-white font-bold text-3xl">
+                                                                        {
+                                                                            each.name
+                                                                        }
+                                                                    </h1>
+                                                                </div>
+                                                            </div>
+                                                            <img
+                                                                className="w-full"
+                                                                src={`${asset_url}storage/images/${each.img}`}
+                                                                alt={each.name}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </Carousel>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
                             />
                         </div>

@@ -12,20 +12,34 @@ import SecondaryButton from "@/Components/SecondaryButton";
 import DangerButton from "@/Components/DangerButton";
 import TextAreaInput from "@/Components/TextAreaInput";
 import DateInput from "@/Components/DateInput";
+import ImageInput from "@/Components/ImageInput";
+import FileInput from "@/Components/FileInput"
 
-export default function Form({ auth, status, title, curanmor = null }) {
+export default function Form({ auth, status, title, perkara = null }) {
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
 
     const useFormInertia = useForm({
-        no_laporan: curanmor ? curanmor.no_laporan : "",
-        jenis_laporan: curanmor ? curanmor.jenis_laporan : "Pencurian",
-        hari_kejadian: curanmor
-            ? moment.utc(curanmor.hari_kejadian).toDate()
+        nama_pelapor: perkara ? perkara.nama_pelapor : "",
+        nohp_pelapor: perkara ? perkara.nohp_pelapor : "",
+        nama_terlapor: perkara ? perkara.nama_terlapor : "",
+        jenis_perkara: perkara ? perkara.jenis_perkara : "Pencurian",
+        jenis_laporan: perkara ? perkara.jenis_laporan : "Laporan Polisi",
+        gambar_laporan: perkara ? perkara.gambar_laporan : "",
+        no_laporan: perkara ? perkara.no_laporan : "",
+        waktu_melapor: perkara
+            ? moment.utc(perkara.hari_kejadian).toDate()
             : new Date(),
-        pelapor: curanmor ? curanmor.pelapor : "",
-        jenis_motor: curanmor ? curanmor.jenis_motor : "Gigi",
-        barang_bukti: curanmor ? curanmor.barang_bukti : "",
-        kronologis: curanmor ? curanmor.kronologis : "",
+        waktu_kejadian: perkara
+            ? moment.utc(perkara.hari_kejadian).toDate()
+            : new Date(),
+        tkp: perkara ? perkara.tkp : "",
+        gambar_kerugian: perkara ? perkara.gambar_kerugian : "",
+        gambar_barang_bukti: perkara ? perkara.gambar_barang_bukti : "",
+        kronologis: perkara ? perkara.kronologis : "",
+        nama_penyidik: perkara ? perkara.nama_penyidik : "",
+        nama_penyidik_pembantu: perkara ? perkara.nama_penyidik_pembantu : "",
+        perkembangan_perkara: perkara ? perkara.perkembangan_perkara : "LIDIK",
+        keterangan: perkara ? perkara.keterangan : "",
     });
 
     const { data, setData, processing, errors, reset } = useFormInertia;
@@ -33,10 +47,9 @@ export default function Form({ auth, status, title, curanmor = null }) {
     const submit = (e) => {
         e.preventDefault();
 
-        if (curanmor) {
-            useFormInertia.patch(route("dashboard.edit", curanmor.id));
+        if (perkara) {
+            useFormInertia.patch(route("dashboard.edit", perkara.id));
         } else {
-            console.log("awd");
             useFormInertia.post(route("dashboard.new"));
         }
     };
@@ -44,13 +57,23 @@ export default function Form({ auth, status, title, curanmor = null }) {
     useEffect(() => {
         return () => {
             reset(
-                "no_laporan",
+                "nama_pelapor",
+                "nohp_pelapor",
+                "nama_terlapor",
+                "jenis_perkara",
                 "jenis_laporan",
-                "hari_kejadian",
-                "pelapor",
-                "jenis_motor",
-                "barang_bukti",
-                "kronologis"
+                "gambar_laporan",
+                "no_laporan",
+                "waktu_melapor",
+                "waktu_kejadian",
+                "tkp",
+                "gambar_kerugian",
+                "gambar_barang_bukti",
+                "kronologis",
+                "nama_penyidik",
+                "nama_penyidik_pembantu",
+                "perkembangan_perkara",
+                "keterangan"
             );
         };
     }, []);
@@ -76,7 +99,7 @@ export default function Form({ auth, status, title, curanmor = null }) {
             <Head title={title} />
 
             <div className="py-12">
-                <div className="max-w-xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 ">
                             {status && (
@@ -85,155 +108,269 @@ export default function Form({ auth, status, title, curanmor = null }) {
                                 </div>
                             )}
                             <form onSubmit={submit}>
-                                <div>
-                                    <InputLabel
-                                        forInput="no_laporan"
-                                        value="No Laporan"
-                                    />
+                                <div className="flex gap-2">
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="nama_pelapor"
+                                            value="Nama Pelapor"
+                                        />
 
-                                    <TextInput
-                                        id="no_laporan"
-                                        type="text"
-                                        name="no_laporan"
-                                        value={data.no_laporan}
-                                        className="mt-1 block w-full"
-                                        autoComplete="no_laporan"
-                                        isFocused={true}
-                                        handleChange={onHandleChange}
-                                    />
+                                        <TextInput
+                                            id="nama_pelapor"
+                                            type="text"
+                                            name="nama_pelapor"
+                                            value={data.nama_pelapor}
+                                            className="mt-1 block w-full"
+                                            autoComplete="nama_pelapor"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                        />
 
-                                    <InputError
-                                        message={errors.no_laporan}
-                                        className="mt-2"
-                                    />
+                                        <InputError
+                                            message={errors.nama_pelapor}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="nohp_pelapor"
+                                            value="No. HP Pelapor"
+                                        />
+
+                                        <TextInput
+                                            id="nohp_pelapor"
+                                            type="text"
+                                            name="nohp_pelapor"
+                                            value={data.nohp_pelapor}
+                                            className="mt-1 block w-full"
+                                            autoComplete="nohp_pelapor"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                        />
+
+                                        <InputError
+                                            message={errors.nohp_pelapor}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 flex gap-2">
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="nama_terlapor"
+                                            value="Nama Terlapor"
+                                        />
+
+                                        <TextInput
+                                            id="nama_terlapor"
+                                            type="text"
+                                            name="nama_terlapor"
+                                            value={data.nama_terlapor}
+                                            className="mt-1 block w-full"
+                                            autoComplete="nama_terlapor"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                        />
+
+                                        <InputError
+                                            message={errors.nama_terlapor}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="jenis_perkara"
+                                            value="Jenis Perkara"
+                                        />
+
+                                        <SelectInput
+                                            id="jenis_perkara"
+                                            name="jenis_perkara"
+                                            value={data.jenis_perkara}
+                                            className="mt-1 block w-full"
+                                            handleChange={onHandleChange}
+                                            options={[
+                                                {
+                                                    label: "Pencurian",
+                                                    value: "Pencurian",
+                                                },
+                                                {
+                                                    label: "Penganiayaan",
+                                                    value: "Penganiayaan",
+                                                },
+                                                {
+                                                    label: "Pembunuhan",
+                                                    value: "Pembunuhan",
+                                                },
+                                                {
+                                                    label: "Pengancaman",
+                                                    value: "Pengancaman",
+                                                },
+                                            ]}
+                                        />
+
+                                        <InputError
+                                            message={errors.jenis_perkara}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 flex gap-2">
+                                    <div className="basis-6/12">
+                                        <div>
+                                            <InputLabel
+                                                forInput="no_laporan"
+                                                value="No Laporan"
+                                            />
+
+                                            <TextInput
+                                                id="no_laporan"
+                                                type="text"
+                                                name="no_laporan"
+                                                value={data.no_laporan}
+                                                className="mt-1 block w-full"
+                                                autoComplete="no_laporan"
+                                                isFocused={true}
+                                                handleChange={onHandleChange}
+                                            />
+
+                                            <InputError
+                                                message={errors.no_laporan}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                        <div className="mt-4">
+                                            <InputLabel
+                                                forInput="jenis_laporan"
+                                                value="Jenis Laporan"
+                                            />
+
+                                            <SelectInput
+                                                id="jenis_laporan"
+                                                name="jenis_laporan"
+                                                value={data.jenis_laporan}
+                                                className="mt-1 block w-full"
+                                                handleChange={onHandleChange}
+                                                options={[
+                                                    {
+                                                        label: "Laporan Polisi",
+                                                        value: "Laporan Polisi",
+                                                    },
+                                                    {
+                                                        label: "Laporan Pengaduan",
+                                                        value: "Laporan Pengaduan",
+                                                    },
+                                                ]}
+                                            />
+
+                                            <InputError
+                                                message={errors.jenis_laporan}
+                                                className="mt-2"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="gambar_laporan"
+                                            value="Upload Laporan"
+                                        />
+
+                                        {/* <ImageInput
+                                            id="gambar_laporan"
+                                            type="text"
+                                            name="gambar_laporan"
+                                            value={data.gambar_laporan}
+                                            className="mt-1 block w-full"
+                                            autoComplete="gambar_laporan"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                        /> */}
+
+                                        {/* <FileInput
+                                            id="gambar_laporan"
+                                            type="text"
+                                            name="gambar_laporan"
+                                            value={data.gambar_laporan}
+                                            className="mt-1 block w-full"
+                                            autoComplete="gambar_laporan"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                        /> */}
+
+                                        <InputError
+                                            message={errors.gambar_laporan}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 flex gap-2">
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="waktu_melapor"
+                                            value="Waktu Melapor"
+                                        />
+
+                                        <DateInput
+                                            id="waktu_melapor"
+                                            type="waktu_melapor"
+                                            name="waktu_melapor"
+                                            value={data.waktu_melapor}
+                                            className="mt-1 block w-full"
+                                            handleChange={onHandleChange}
+                                        />
+
+                                        <InputError
+                                            message={errors.waktu_melapor}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="waktu_kejadian"
+                                            value="Waktu Kejadian"
+                                        />
+
+                                        <DateInput
+                                            id="waktu_kejadian"
+                                            type="waktu_kejadian"
+                                            name="waktu_kejadian"
+                                            value={data.waktu_kejadian}
+                                            className="mt-1 block w-full"
+                                            handleChange={onHandleChange}
+                                        />
+
+                                        <InputError
+                                            message={errors.waktu_kejadian}
+                                            className="mt-2"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="mt-4">
-                                    <InputLabel
-                                        forInput="jenis_laporan"
-                                        value="Jenis Laporan"
-                                    />
-
-                                    <SelectInput
-                                        id="jenis_laporan"
-                                        name="jenis_laporan"
-                                        value={data.jenis_laporan}
-                                        className="mt-1 block w-full"
-                                        handleChange={onHandleChange}
-                                        options={[
-                                            {
-                                                label: "Pencurian",
-                                                value: "Pencurian",
-                                            },
-                                            {
-                                                label: "Pembobolan",
-                                                value: "Pembobolan",
-                                            },
-                                        ]}
-                                    />
-
-                                    <InputError
-                                        message={errors.jenis_laporan}
-                                        className="mt-2"
-                                    />
-                                </div>
-
-                                <div className="mt-4">
-                                    <InputLabel
-                                        forInput="hari_kejadian"
-                                        value="Hari Kejadian"
-                                    />
-
-                                    <DateInput
-                                        id="hari_kejadian"
-                                        type="hari_kejadian"
-                                        name="hari_kejadian"
-                                        value={data.hari_kejadian}
-                                        className="mt-1 block w-full"
-                                        handleChange={onHandleChange}
-                                    />
-
-                                    <InputError
-                                        message={errors.hari_kejadian}
-                                        className="mt-2"
-                                    />
-                                </div>
-
-                                <div className="mt-4">
-                                    <InputLabel
-                                        forInput="pelapor"
-                                        value="Pelapor"
-                                    />
-
-                                    <TextInput
-                                        id="pelapor"
-                                        type="text"
-                                        name="pelapor"
-                                        value={data.pelapor}
-                                        className="mt-1 block w-full"
-                                        handleChange={onHandleChange}
-                                    />
-
-                                    <InputError
-                                        message={errors.pelapor}
-                                        className="mt-2"
-                                    />
-                                </div>
-
-                                <div className="mt-4">
-                                    <InputLabel
-                                        forInput="jenis_motor"
-                                        value="Jenis Motor"
-                                    />
-
-                                    <SelectInput
-                                        id="jenis_motor"
-                                        name="jenis_motor"
-                                        value={data.jenis_motor}
-                                        className="mt-1 block w-full"
-                                        handleChange={onHandleChange}
-                                        options={[
-                                            {
-                                                label: "Gigi",
-                                                value: "Gigi",
-                                            },
-                                            {
-                                                label: "Matic",
-                                                value: "Matic",
-                                            },
-                                            {
-                                                label: "Kopling",
-                                                value: "Kopling",
-                                            },
-                                        ]}
-                                    />
-
-                                    <InputError
-                                        message={errors.status}
-                                        className="mt-2"
-                                    />
-                                </div>
-
-                                <div className="mt-4">
-                                    <InputLabel
-                                        forInput="barang_bukti"
-                                        value="Barang Bukti"
-                                    />
+                                    <InputLabel forInput="tkp" value="TKP" />
 
                                     <TextAreaInput
-                                        id="barang_bukti"
+                                        id="tkp"
                                         type="text"
-                                        name="barang_bukti"
-                                        value={data.barang_bukti}
+                                        name="tkp"
+                                        value={data.tkp}
                                         className="mt-1 block w-full"
                                         rows="3"
                                         handleChange={onHandleChange}
                                     />
 
                                     <InputError
-                                        message={errors.barang_bukti}
+                                        message={errors.tkp}
                                         className="mt-2"
                                     />
+                                </div>
+
+                                <div className="mt-4 flex gap-2">
+                                    <div></div>
+                                    <div></div>
                                 </div>
 
                                 <div className="mt-4">
@@ -258,14 +395,123 @@ export default function Form({ auth, status, title, curanmor = null }) {
                                     />
                                 </div>
 
+                                <div className="mt-4 flex gap-2">
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="nama_penyidik"
+                                            value="Nama Penyidik"
+                                        />
+
+                                        <TextInput
+                                            id="nama_penyidik"
+                                            type="text"
+                                            name="nama_penyidik"
+                                            value={data.nama_penyidik}
+                                            className="mt-1 block w-full"
+                                            autoComplete="nama_penyidik"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                        />
+
+                                        <InputError
+                                            message={errors.nama_penyidik}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="nama_penyidik_pembantu"
+                                            value="Nama Penyidik Pembantu"
+                                        />
+
+                                        <TextInput
+                                            id="nama_penyidik_pembantu"
+                                            type="text"
+                                            name="nama_penyidik_pembantu"
+                                            value={data.nama_penyidik_pembantu}
+                                            className="mt-1 block w-full"
+                                            autoComplete="nama_penyidik_pembantu"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                        />
+
+                                        <InputError
+                                            message={
+                                                errors.nama_penyidik_pembantu
+                                            }
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <InputLabel
+                                        forInput="perkembangan_perkara"
+                                        value="Perkembangan Perkara"
+                                    />
+
+                                    <SelectInput
+                                        id="perkembangan_perkara"
+                                        name="perkembangan_perkara"
+                                        value={data.perkembangan_perkara}
+                                        className="mt-1 block w-full"
+                                        handleChange={onHandleChange}
+                                        options={[
+                                            {
+                                                label: "LIDIK",
+                                                value: "LIDIK",
+                                            },
+                                            {
+                                                label: "SIDIK",
+                                                value: "SIDIK",
+                                            },
+                                            {
+                                                label: "P19",
+                                                value: "P19",
+                                            },
+                                            {
+                                                label: "P21",
+                                                value: "P21",
+                                            },
+                                        ]}
+                                    />
+
+                                    <InputError
+                                        message={errors.perkembangan_perkara}
+                                        className="mt-2"
+                                    />
+                                </div>
+
+                                <div className="mt-4">
+                                    <InputLabel
+                                        forInput="keterangan"
+                                        value="Keterangan"
+                                    />
+
+                                    <TextAreaInput
+                                        id="keterangan"
+                                        type="text"
+                                        name="keterangan"
+                                        value={data.keterangan}
+                                        className="mt-1 block w-full"
+                                        rows="3"
+                                        handleChange={onHandleChange}
+                                    />
+
+                                    <InputError
+                                        message={errors.keterangan}
+                                        className="mt-2"
+                                    />
+                                </div>
+
                                 <div
                                     className={
-                                        curanmor
+                                        data
                                             ? "flex items-center justify-between mt-4"
                                             : "flex items-center justify-end mt-4"
                                     }
                                 >
-                                    {curanmor && (
+                                    {data && (
                                         <DangerButton
                                             type="button"
                                             className="mr-4"
@@ -281,7 +527,7 @@ export default function Form({ auth, status, title, curanmor = null }) {
                                         className="ml-4"
                                         processing={processing}
                                     >
-                                        {curanmor ? "Ubah Data" : "Simpan Data"}
+                                        {data ? "Ubah Data" : "Simpan Data"}
                                     </PrimaryButton>
                                 </div>
                             </form>
@@ -290,15 +536,15 @@ export default function Form({ auth, status, title, curanmor = null }) {
                 </div>
             </div>
 
-            {curanmor && (
+            {data && (
                 <Modal
                     show={confirmingDeletion}
                     onClose={() => setConfirmingDeletion(false)}
                 >
                     <div className="p-6">
                         <h2 className="text-lg font-medium text-gray-900 ">
-                            Apakah kamu yakin ingin menghapus data curanmor{" "}
-                            <b>{curanmor.no_laporan}</b> ?
+                            Apakah kamu yakin ingin menghapus data data{" "}
+                            <b>{data.no_laporan}</b> ?
                         </h2>
 
                         <p className="mt-1 text-sm text-gray-600 ">
@@ -318,7 +564,7 @@ export default function Form({ auth, status, title, curanmor = null }) {
                                 processing={processing}
                                 onClick={() => {
                                     useFormInertia.delete(
-                                        route("dashboard.delete", curanmor.id),
+                                        route("dashboard.delete", data.id),
                                         {
                                             preserveScroll: true,
                                             onSuccess: () =>
