@@ -15,6 +15,6 @@ class CuranmorSeeder extends Seeder
      */
     public function run()
     {
-        Curanmor::factory(10)->create();
+        Curanmor::factory(3)->create();
     }
 }

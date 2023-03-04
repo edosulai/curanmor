@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCuranmorRequest;
 use App\Http\Requests\UpdateCuranmorRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
@@ -46,17 +47,31 @@ class CuranmorController extends Controller
      */
     public function store(StoreCuranmorRequest $request)
     {
-        // Curanmor::create([
-        //     'no_laporan' => $request->no_laporan,
-        //     'jenis_laporan' => $request->jenis_laporan,
-        //     'hari_kejadian' => Carbon::parse($request->hari_kejadian)->toDateTimeString(),
-        //     'pelapor' => $request->pelapor,
-        //     'jenis_motor' => $request->jenis_motor,
-        //     'barang_bukti' => $request->barang_bukti,
-        //     'kronologis' => $request->kronologis,
-        // ]);
+        $gambar_laporan = $request->file('gambar_laporan');
+        $gambar_kerugian = $request->file('gambar_kerugian');
+        $gambar_barang_bukti = $request->file('gambar_barang_bukti');
 
-        // return redirect()->route('dashboard')->with('status', 'Data Curanmor Berhasil di Tambahkan');
+        Curanmor::create([
+            'nama_pelapor' => $request->nama_pelapor,
+            'nohp_pelapor' => $request->nohp_pelapor,
+            'nama_terlapor' => $request->nama_terlapor,
+            'jenis_perkara' => $request->jenis_perkara,
+            'jenis_laporan' => $request->jenis_laporan,
+            'gambar_laporan' => $gambar_laporan ? basename($gambar_laporan->store('public/images')) : $gambar_laporan,
+            'no_laporan' => $request->no_laporan,
+            'waktu_melapor' => Carbon::parse($request->waktu_melapor)->toDateTimeString(),
+            'waktu_kejadian' => Carbon::parse($request->waktu_kejadian)->toDateTimeString(),
+            'tkp' => $request->tkp,
+            'gambar_kerugian' => $gambar_kerugian ? basename($gambar_kerugian->store('public/images')) : $gambar_kerugian,
+            'gambar_barang_bukti' => $gambar_barang_bukti ? basename($gambar_barang_bukti->store('public/images')) : $gambar_barang_bukti,
+            'kronologis' => $request->kronologis,
+            'nama_penyidik' => $request->nama_penyidik,
+            'nama_penyidik_pembantu' => $request->nama_penyidik_pembantu,
+            'perkembangan_perkara' => $request->perkembangan_perkara,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()->route('dashboard', ['status' => 'Data Curanmor Berhasil di Tambahkan']);
     }
 
     /**
@@ -85,8 +100,8 @@ class CuranmorController extends Controller
         return Inertia::render('Curanmor/Form', [
             'title' => 'Edit Data Curanmor',
             'status' => session('status'),
-            'data' => $curanmor,
-        ]);
+            'perkara' => $curanmor,
+        ])->toResponse($request);
     }
 
     /**
@@ -98,20 +113,48 @@ class CuranmorController extends Controller
      */
     public function update(UpdateCuranmorRequest $request, Curanmor $curanmor)
     {
-        // $curanmor = $curanmor->find($request->id);
-        // if (is_null($curanmor))
-        //     return abort(400);
+        $curanmor = $curanmor->find($request->id);
+        if (is_null($curanmor))
+            return abort(400);
 
-        // $curanmor->no_laporan = $request->no_laporan;
-        // $curanmor->jenis_laporan = $request->jenis_laporan;
-        // $curanmor->hari_kejadian = Carbon::parse($request->hari_kejadian)->toDateTimeString();
-        // $curanmor->pelapor = $request->pelapor;
-        // $curanmor->jenis_motor = $request->jenis_motor;
-        // $curanmor->barang_bukti = $request->barang_bukti;
-        // $curanmor->kronologis = $request->kronologis;
-        // $curanmor->save();
+        $gambar_laporan = $request->file('gambar_laporan');
+        $gambar_kerugian = $request->file('gambar_kerugian');
+        $gambar_barang_bukti = $request->file('gambar_barang_bukti');
 
-        // return redirect()->route('dashboard')->with('status', 'Data Curanmor ' . $request->no_laporan . ' Berhasil di Ubah');
+        $curanmor->nama_pelapor = $request->nama_pelapor;
+        $curanmor->nohp_pelapor = $request->nohp_pelapor;
+        $curanmor->nama_terlapor = $request->nama_terlapor;
+        $curanmor->jenis_perkara = $request->jenis_perkara;
+        $curanmor->jenis_laporan = $request->jenis_laporan;
+
+        if ($gambar_laporan) {
+            Storage::delete('public/images/' . $curanmor->gambar_laporan);
+            $curanmor->gambar_laporan = basename($gambar_laporan->store('public/images'));
+        }
+
+        $curanmor->no_laporan = $request->no_laporan;
+        $curanmor->waktu_melapor = Carbon::parse($request->waktu_melapor)->toDateTimeString();
+        $curanmor->waktu_kejadian = Carbon::parse($request->waktu_kejadian)->toDateTimeString();
+        $curanmor->tkp = $request->tkp;
+
+        if ($gambar_kerugian) {
+            Storage::delete('public/images/' . $curanmor->gambar_kerugian);
+            $curanmor->gambar_kerugian = basename($gambar_kerugian->store('public/images'));
+        }
+
+        if ($gambar_barang_bukti) {
+            Storage::delete('public/images/' . $curanmor->gambar_barang_bukti);
+            $curanmor->gambar_barang_bukti = basename($gambar_barang_bukti->store('public/images'));
+        }
+
+        $curanmor->kronologis = $request->kronologis;
+        $curanmor->nama_penyidik = $request->nama_penyidik;
+        $curanmor->nama_penyidik_pembantu = $request->nama_penyidik_pembantu;
+        $curanmor->perkembangan_perkara = $request->perkembangan_perkara;
+        $curanmor->keterangan = $request->keterangan;
+        $curanmor->save();
+
+        return redirect()->route('dashboard', ['status' => 'Data Curanmor ' . $request->no_laporan . ' Berhasil di Ubah']);
     }
 
     /**
@@ -122,19 +165,26 @@ class CuranmorController extends Controller
      */
     public function destroy(Request $request, Curanmor $curanmor)
     {
-        // $validator = Validator::make(['id' => $request->id], [
-        //     'id' => ['required', 'integer', 'exists:' . Curanmor::class . ',id'],
-        // ]);
+        $validator = Validator::make(['id' => $request->id], [
+            'id' => ['required', 'integer', 'exists:' . Curanmor::class . ',id'],
+        ]);
 
-        // if ($validator->fails()) {
-        //     return redirect("dashboard")
-        //         ->withErrors($validator)
-        //         ->withInput();
-        // }
+        if ($validator->fails()) {
+            return redirect("dashboard")
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-        // $curanmor = $curanmor->find($request->id);
-        // $curanmor->delete();
+        $curanmor = $curanmor->find($request->id);
 
-        // return redirect()->route('dashboard')->with('status', 'Data Curanmor ' . $request->no_laporan . ' Berhasil di Hapus');
+        Storage::delete([
+            'public/images/' . $curanmor->gambar_laporan,
+            'public/images/' . $curanmor->gambar_kerugian,
+            'public/images/' . $curanmor->gambar_barang_bukti,
+        ]);
+
+        $curanmor->delete();
+
+        return redirect()->route('dashboard', ['status' => 'Data Curanmor ' . $curanmor->nama_pelapor . ' Berhasil di Hapus']);
     }
 }

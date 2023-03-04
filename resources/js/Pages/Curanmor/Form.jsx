@@ -13,9 +13,14 @@ import DangerButton from "@/Components/DangerButton";
 import TextAreaInput from "@/Components/TextAreaInput";
 import DateInput from "@/Components/DateInput";
 import ImageInput from "@/Components/ImageInput";
-import FileInput from "@/Components/FileInput"
 
-export default function Form({ auth, status, title, perkara = null }) {
+export default function Form({
+    auth,
+    status,
+    title,
+    perkara = null,
+    asset_url,
+}) {
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
 
     const useFormInertia = useForm({
@@ -24,7 +29,7 @@ export default function Form({ auth, status, title, perkara = null }) {
         nama_terlapor: perkara ? perkara.nama_terlapor : "",
         jenis_perkara: perkara ? perkara.jenis_perkara : "Pencurian",
         jenis_laporan: perkara ? perkara.jenis_laporan : "Laporan Polisi",
-        gambar_laporan: perkara ? perkara.gambar_laporan : "",
+        gambar_laporan: null,
         no_laporan: perkara ? perkara.no_laporan : "",
         waktu_melapor: perkara
             ? moment.utc(perkara.hari_kejadian).toDate()
@@ -33,8 +38,8 @@ export default function Form({ auth, status, title, perkara = null }) {
             ? moment.utc(perkara.hari_kejadian).toDate()
             : new Date(),
         tkp: perkara ? perkara.tkp : "",
-        gambar_kerugian: perkara ? perkara.gambar_kerugian : "",
-        gambar_barang_bukti: perkara ? perkara.gambar_barang_bukti : "",
+        gambar_kerugian: null,
+        gambar_barang_bukti: null,
         kronologis: perkara ? perkara.kronologis : "",
         nama_penyidik: perkara ? perkara.nama_penyidik : "",
         nama_penyidik_pembantu: perkara ? perkara.nama_penyidik_pembantu : "",
@@ -48,7 +53,7 @@ export default function Form({ auth, status, title, perkara = null }) {
         e.preventDefault();
 
         if (perkara) {
-            useFormInertia.patch(route("dashboard.edit", perkara.id));
+            useFormInertia.post(route("dashboard.edit", perkara.id));
         } else {
             useFormInertia.post(route("dashboard.new"));
         }
@@ -83,6 +88,8 @@ export default function Form({ auth, status, title, perkara = null }) {
             event.target.name,
             event.target.type === "checkbox"
                 ? event.target.checked
+                : event.target.type === "file"
+                ? event.target.files[0]
                 : event.target.value
         );
     };
@@ -107,7 +114,10 @@ export default function Form({ auth, status, title, perkara = null }) {
                                     {status}
                                 </div>
                             )}
-                            <form onSubmit={submit}>
+                            <form
+                                onSubmit={submit}
+                                encType="multipart/form-data"
+                            >
                                 <div className="flex gap-2">
                                     <div className="basis-6/12">
                                         <InputLabel
@@ -277,31 +287,18 @@ export default function Form({ auth, status, title, perkara = null }) {
                                             value="Upload Laporan"
                                         />
 
-                                        {/* <ImageInput
+                                        <ImageInput
                                             id="gambar_laporan"
-                                            type="text"
                                             name="gambar_laporan"
                                             value={data.gambar_laporan}
-                                            className="mt-1 block w-full"
-                                            autoComplete="gambar_laporan"
-                                            isFocused={true}
+                                            error={errors.gambar_laporan}
+                                            className="mt-1 block w-full h-[124px]"
                                             handleChange={onHandleChange}
-                                        /> */}
-
-                                        {/* <FileInput
-                                            id="gambar_laporan"
-                                            type="text"
-                                            name="gambar_laporan"
-                                            value={data.gambar_laporan}
-                                            className="mt-1 block w-full"
-                                            autoComplete="gambar_laporan"
-                                            isFocused={true}
-                                            handleChange={onHandleChange}
-                                        /> */}
-
-                                        <InputError
-                                            message={errors.gambar_laporan}
-                                            className="mt-2"
+                                            preview={
+                                                perkara
+                                                    ? `${asset_url}storage/images/${perkara.gambar_laporan}`
+                                                    : null
+                                            }
                                         />
                                     </div>
                                 </div>
@@ -369,8 +366,46 @@ export default function Form({ auth, status, title, perkara = null }) {
                                 </div>
 
                                 <div className="mt-4 flex gap-2">
-                                    <div></div>
-                                    <div></div>
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="gambar_kerugian"
+                                            value="Upload Kerugian"
+                                        />
+
+                                        <ImageInput
+                                            id="gambar_kerugian"
+                                            name="gambar_kerugian"
+                                            value={data.gambar_kerugian}
+                                            error={errors.gambar_kerugian}
+                                            className="mt-1 block w-full h-[124px]"
+                                            handleChange={onHandleChange}
+                                            preview={
+                                                perkara
+                                                    ? `${asset_url}storage/images/${perkara.gambar_kerugian}`
+                                                    : null
+                                            }
+                                        />
+                                    </div>
+                                    <div className="basis-6/12">
+                                        <InputLabel
+                                            forInput="gambar_barang_bukti"
+                                            value="Upload Barang Bukti"
+                                        />
+
+                                        <ImageInput
+                                            id="gambar_barang_bukti"
+                                            name="gambar_barang_bukti"
+                                            value={data.gambar_barang_bukti}
+                                            error={errors.gambar_barang_bukti}
+                                            className="mt-1 block w-full h-[124px]"
+                                            handleChange={onHandleChange}
+                                            preview={
+                                                perkara
+                                                    ? `${asset_url}storage/images/${perkara.gambar_barang_bukti}`
+                                                    : null
+                                            }
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="mt-4">
@@ -506,12 +541,12 @@ export default function Form({ auth, status, title, perkara = null }) {
 
                                 <div
                                     className={
-                                        data
+                                        perkara
                                             ? "flex items-center justify-between mt-4"
                                             : "flex items-center justify-end mt-4"
                                     }
                                 >
-                                    {data && (
+                                    {perkara && (
                                         <DangerButton
                                             type="button"
                                             className="mr-4"
@@ -527,7 +562,7 @@ export default function Form({ auth, status, title, perkara = null }) {
                                         className="ml-4"
                                         processing={processing}
                                     >
-                                        {data ? "Ubah Data" : "Simpan Data"}
+                                        {perkara ? "Ubah Data" : "Simpan Data"}
                                     </PrimaryButton>
                                 </div>
                             </form>
@@ -536,15 +571,15 @@ export default function Form({ auth, status, title, perkara = null }) {
                 </div>
             </div>
 
-            {data && (
+            {perkara && (
                 <Modal
                     show={confirmingDeletion}
                     onClose={() => setConfirmingDeletion(false)}
                 >
                     <div className="p-6">
                         <h2 className="text-lg font-medium text-gray-900 ">
-                            Apakah kamu yakin ingin menghapus data data{" "}
-                            <b>{data.no_laporan}</b> ?
+                            Apakah kamu yakin ingin menghapus data{" "}
+                            <b>{data.nama_pelapor}</b> ?
                         </h2>
 
                         <p className="mt-1 text-sm text-gray-600 ">
@@ -564,7 +599,7 @@ export default function Form({ auth, status, title, perkara = null }) {
                                 processing={processing}
                                 onClick={() => {
                                     useFormInertia.delete(
-                                        route("dashboard.delete", data.id),
+                                        route("dashboard.delete", perkara.id),
                                         {
                                             preserveScroll: true,
                                             onSuccess: () =>

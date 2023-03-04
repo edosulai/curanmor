@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/new', [CuranmorController::class, 'create'])->name('dashboard.new');
     Route::post('/dashboard/new', [CuranmorController::class, 'store'])->name('dashboard.new');
     Route::get('/dashboard/{id}', [CuranmorController::class, 'edit'])->name('dashboard.edit');
-    Route::patch('/dashboard/{id}', [CuranmorController::class, 'update'])->name('dashboard.edit');
+    Route::post('/dashboard/{id}', [CuranmorController::class, 'update'])->name('dashboard.edit');
     Route::delete('/dashboard/{id}', [CuranmorController::class, 'destroy'])->name('dashboard.delete');
 });
 
